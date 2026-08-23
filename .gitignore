@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Environments
+.venv/
+venv/
+segment/
+
+# Private working documents — not for publication.
+# The public-facing plan is ROADMAP.md.
+PROJECT_PLAN.md
+
+# Raw data IS committed.
+# Both sources are CC BY-IGO, which permits redistribution with attribution
+# (see README and docs/data_provenance.md). The files total ~2.4 MB, they let
+# anyone clone and run the pipeline, and committing them freezes the exact
+# versions these results came from — HDX updates these datasets annually.
+
+# Build artifacts — rebuildable from sql/ + data/raw/
+data/processed/
+*.db
+*.sqlite
+
+# MLflow
+mlruns/
+mlartifacts/
+mlflow.db
+
+# Office lock files
+~$*
