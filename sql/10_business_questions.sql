@@ -134,11 +134,12 @@ ORDER BY total_pop DESC;
 -- 204,909,220 people (24.6%).
 --
 -- INTERPRETATION: mean LGA population varies nearly two-fold across the
--- region — Kaduna about 381,000, Kebbi about 215,000, Zamfara about
+-- region, Kaduna about 381,000, Kebbi about 215,000, Zamfara about
 -- 326,000 across only 14 LGAs. The unit being clustered is not uniform in
--- size, so the segmentation must work in rates and densities. Cluster on
--- raw totals and the largest LGAs will separate out for reasons that have
--- nothing to do with what kind of market they are.
+-- size, so, my segmentation models must 
+-- rely on rates and densities rather than absolute counts. Clustering on raw figures risks biasing 
+-- the output toward larger LGAs based on scale alone, masking structural market characteristics.
+
 
 
 -- ------------------------------------------------------------
