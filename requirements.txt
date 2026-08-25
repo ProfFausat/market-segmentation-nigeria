@@ -1,0 +1,14 @@
+et_xmlfile==2.0.0
+mkl_fft==2.2.0
+mkl_random==1.4.1
+mkl-service==2.7.2
+numpy==2.5.2
+openpyxl==3.1.5
+packaging==26.3
+pandas==3.0.5
+pip==26.1.2
+python-dateutil==2.9.0.post0
+setuptools==83.0.0
+six==1.17.0
+tzdata==2026.2
+wheel==0.47.0
