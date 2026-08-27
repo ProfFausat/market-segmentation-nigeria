@@ -71,6 +71,23 @@ SOURCES = {
     "raw_pop_adm1_2022": ("nga_admpop_adm1_2022.csv", None, "ADM1_PCODE", 37),
     "raw_pop_adm0_2022": ("nga_admpop_adm0_2022.csv", None, "ADM0_PCODE", 1),
     "raw_gazetteer_adm2": ("nga_admgz.xlsx", "Admin2", "admin2Pcode", 774),
+    # GEP V2, scenario ng-2-0_0_0_0_0_0. 708,536 settlement clusters, 81 columns.
+    # Scenario identity verified against the data itself, not documentation —
+    # see docs/data_provenance.md. Read compressed; pandas handles .gz natively.
+    "raw_gep": ("ng-2-0_0_0_0_0_0.csv.gz", None, "id", 708536),
+    # Global Forest Watch / Global Nature Watch, 30% canopy threshold, 2001-2025.
+    # 853 state-year rows, not 37 x 25 = 925: a state-year with no recorded loss
+    # is absent rather than zero. That distinction matters when aggregating.
+    "raw_gfw_loss_region": (
+        "gfw_by_region/treecover_loss_by_region__ha.csv", None, "adm1", 853),
+    # The state code lookup, shipped with the same download. Codes are 1-37
+    # alphabetically; without this file the loss table identifies nothing.
+    "raw_gfw_adm1": (
+        "gfw_by_region/adm1_metadata.csv", None, "adm1__id", 37),
+    # WorldPop-derived poverty, aggregated to LGA. 775 rows, not 774 — it uses
+    # GADM boundaries, which divide Nigeria slightly differently from the COD.
+    # Keyed on names, not P-codes: the reconciliation happens in SQL.
+    "raw_poverty": ("povertyrate.csv", None, "NAME_2", 775),
 }
 
 
@@ -118,21 +135,31 @@ def update_manifest(accept_changes: bool) -> list[str]:
     previous = read_manifest()
     rows, changed = [], []
 
-    files = sorted(p for p in RAW.iterdir()
-                   if p.is_file() and p.name != MANIFEST.name)
+    # Walk subfolders. Sources that arrive as multi-file downloads live in their
+    # own directory — data/raw/gfw_national/, data/raw/gfw_by_region/ — because
+    # two GFW downloads ship files with identical names, and flattening them
+    # meant one silently overwrote the other.
+    # _superseded/ holds files kept only until they are confirmed unwanted.
+    files = sorted(
+        p for p in RAW.rglob("*")
+        if p.is_file()
+        and p.name != MANIFEST.name
+        and "_superseded" not in p.parts
+    )
     if not files:
         raise FileNotFoundError(f"{RAW} is empty. Download the sources first.")
 
     for path in files:
+        rel = path.relative_to(RAW).as_posix()
         digest = sha256_of(path)
         stat = path.stat()
-        prior = previous.get(path.name)
+        prior = previous.get(rel)
 
         if prior and prior["sha256"] != digest:
-            changed.append(path.name)
+            changed.append(rel)
 
         rows.append({
-            "file": path.name,
+            "file": rel,
             "bytes": stat.st_size,
             "sha256": digest,
             "file_modified_utc": datetime.fromtimestamp(
@@ -217,8 +244,10 @@ def main() -> None:
                 f"do not adjust this number to make the error go away."
             )
 
-        df.to_sql(table, con, if_exists="replace", index=False)
-        print(f"  {table:<22} {len(df):>4} rows  <- {filename}"
+        # chunksize keeps memory flat on the 708k-row GEP table; it makes no
+        # difference to the small ones.
+        df.to_sql(table, con, if_exists="replace", index=False, chunksize=50_000)
+        print(f"  {table:<22} {len(df):>7,} rows  <- {filename}"
               + (f" [{sheet}]" if sheet else ""))
 
     con.commit()

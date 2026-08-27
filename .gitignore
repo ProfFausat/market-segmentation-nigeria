@@ -15,11 +15,34 @@ segment/
 # The public-facing plan is ROADMAP.md.
 PROJECT_PLAN.md
 
-# Raw data IS committed.
-# Both sources are CC BY-IGO, which permits redistribution with attribution
-# (see README and docs/data_provenance.md). The files total ~2.4 MB, they let
-# anyone clone and run the pipeline, and committing them freezes the exact
-# versions these results came from — HDX updates these datasets annually.
+# Personal scratch space — exploratory queries, notes, throwaway scripts.
+# Lives beside the work, never leaves this machine.
+scratch/
+
+# ----------------------------------------------------------------------
+# Raw data: MOSTLY committed, with two documented exceptions.
+#
+# The HDX files are CC BY-IGO, total ~2.4 MB, and committing them lets
+# anyone clone and run the pipeline against the exact versions these
+# results came from. See README and docs/data_provenance.md.
+# ----------------------------------------------------------------------
+
+# EXCEPTION 1 — GEP scenario results, 85 MB compressed.
+# Too large for a repository, and only obtainable as part of a 7.7 GB
+# archive. README documents how a reader obtains it.
+data/raw/ng-2-*.csv.gz
+
+# EXCEPTION 2 — extracted shapefile components.
+# nga_admin_boundaries.shp.zip IS committed; these are what comes out of
+# it. Committing both would double ~25 MB for no benefit.
+data/raw/*.shp
+data/raw/*.shx
+data/raw/*.dbf
+data/raw/*.prj
+data/raw/*.cpg
+
+# Files kept only until confirmed unwanted. Deleted by hand, never committed.
+data/raw/_superseded/
 
 # Build artifacts — rebuildable from sql/ + data/raw/
 data/processed/

@@ -8,3 +8,5 @@ dependencies:
   - openpyxl
   - pandas
   - python=3.12
+  - geopandas
+prefix: C:\Users\USER\anaconda3\envs\segment
