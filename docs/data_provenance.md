@@ -2,8 +2,10 @@
 
 One row per file downloaded. Filled in as the files arrived, not afterwards.
 
-All files downloaded **21 August 2026** into `data/raw/`, unmodified. Every
-transformation happens in `sql/`.
+Downloaded into `data/raw/`, unmodified, in two batches: the five HDX
+administrative and population sources on **21 August 2026** (Stage 0), and the
+three analytical sources — electrification, poverty, tree cover loss — on
+**26 August 2026** (Stage 1). Every transformation happens in `sql/`.
 
 | Source | File | URL | Downloaded | Licence | Vintage | Rows | Admin level | LGA coverage |
 |---|---|---|---|---|---|---|---|---|
@@ -12,6 +14,10 @@ transformation happens in `sql/`.
 | HDX COD-PS 2022 | `nga_admpop_adm1_2022.csv` | https://data.humdata.org/dataset/cod-ps-nga | 21 Aug 2026 | CC BY-IGO | Projections for 2022; resource modified 11 Sep 2024 | 37 | State (adm1) | n/a — not published at LGA level |
 | HDX COD-PS 2022 | `nga_admpop_adm0_2022.csv` | https://data.humdata.org/dataset/cod-ps-nga | 21 Aug 2026 | CC BY-IGO | Projections for 2022; resource modified 11 Sep 2024 | 1 | Country (adm0) | n/a |
 | HDX gazetteer | `nga_admgz.xlsx` | https://data.humdata.org/dataset/cod-ps-nga | 21 Aug 2026 | CC BY-IGO | Derived from ITOS tabular data; resource modified 11 Sep 2024 | 774 (Admin2); 714 Admin3; 109 SenDist | All levels | 774 / 774 = 100% |
+| GEP V2 (World Bank) | `ng-2-0_0_0_0_0_0.csv.gz` | https://energydata.info/dataset/nigeria-global-electrification-platform-gep | 26 Aug 2026 | CC BY 4.0 | Dataset created 2019; page last updated 12 Jun 2025; population field is `Pop2020` | 708,536 settlement clusters, 81 columns | Settlement cluster — **no admin identifier**, see note 6 | 769 / 774 LGAs contain at least one cluster |
+| Poverty (KTH / WorldPop) | `povertyrate.csv` | https://energydata.info/dataset/nigeria-aggregated-poverty-map | 26 Aug 2026 | CC0 1.0 | **Release year 2013**; page last updated 17 Jul 2017; derived from WorldPop's 1 km Nigeria poverty surface | 775 | LGA, on **GADM** boundaries — not the COD, see note 7 | not yet joined; 775 GADM units vs 774 COD |
+| Tree cover loss (GFW / Hansen-UMD) | `gfw_by_region/treecover_loss_by_region__ha.csv` | https://www.globalforestwatch.org/dashboards/country/NGA/ | 26 Aug 2026 (licence read 27 Aug 2026) | CC BY 4.0 | 30% canopy threshold, annual loss 2001–2025; **methodology changes at 2011**, see note 8 | 853 state-years, not 37 × 25 = 925 | State (adm1), on **GADM v3.6** — not the COD, see note 8 | n/a — state-level attribute |
+| GFW state lookup | `gfw_by_region/adm1_metadata.csv` | as above | 26 Aug 2026 | CC BY 4.0 | shipped with the same download; codes 1–37 alphabetical | 37 | State (adm1), GADM v3.6 | n/a |
 
 ### Licence and attribution
 
@@ -47,6 +53,56 @@ assumed from the other.
 Note: the CC BY 4.0 statement in the HDX site footer covers HDX's own website
 content, not the datasets. Each dataset carries its own licence field.
 
+**GEP V2** (electrification) — read from the dataset page's "About this data"
+panel, 27 August 2026:
+
+- **License:** Creative Commons Attribution 4.0 (**CC BY 4.0**)
+- **Organisation:** World Bank Group
+- **Created:** 2019 · **Last updated:** 12 June 2025
+- No citation format is requested on the page; CC BY 4.0 still requires
+  attribution, so the README names the World Bank and the licence.
+
+**Nigeria Aggregated Poverty map** — same panel, 27 August 2026:
+
+- **License:** **CC0 1.0** (public domain dedication — no attribution required)
+- **Organisation:** KTH Royal Institute of Technology, Stockholm
+- **Release year:** 2013 · **Last updated:** 17 July 2017
+- **Derived from:** WorldPop's 1 km Nigeria poverty surface, aggregated to LGA
+
+CC0 imposes no obligation, but this project attributes it anyway. A reader
+cannot judge a poverty figure without knowing it came from a 2013 layer.
+
+**Global Forest Watch / Hansen-UMD** (tree cover loss) — read 27 August 2026
+from the widget's information panel and from the upstream UMD Global Forest
+Change download page:
+
+- **License:** Creative Commons Attribution 4.0 International (**CC BY 4.0**)
+- **Source, as GFW states it:** Tree cover loss — Hansen/UMD/Google/USGS/NASA;
+  administrative boundaries — Global Administrative Areas database (**GADM**),
+  version 3.6
+- **Credit required when the data are displayed**, in UMD's exact words:
+  `Source: Hansen/UMD/Google/USGS/NASA`
+- **Credit required when the data are cited:** Hansen, M. C., P. V. Potapov,
+  R. Moore, M. Hancher, S. A. Turubanova, A. Tyukavina, D. Thau, S. V. Stehman,
+  S. J. Goetz, T. R. Loveland, A. Kommareddy, A. Egorov, L. Chini, C. O. Justice
+  and J. R. G. Townshend. 2013. "High-Resolution Global Maps of 21st-Century
+  Forest Cover Change." *Science* 342 (15 November): 850–53.
+- **Platform citation, as GFW gives it:** Global Forest Watch. "Location of tree
+  cover loss in Nigeria". Accessed 27/08/2026 from www.globalforestwatch.org.
+
+Two things about how this was read, both recorded rather than smoothed over.
+
+The dashboard URL now returns **HTTP 302 to `globalnaturewatch.org`**, a
+successor site maintained by Vizzuality. The URL the files were downloaded from
+on 26 August is not the URL that resolves today. The files in `data/raw/` are
+unchanged and their checksums are in `MANIFEST.csv`; the address is what moved.
+
+The licence text was read from UMD's **GFC-2019 v1.7** page, whose coverage is
+2000–2019. The downloaded data runs to 2025 and therefore comes from a later
+version. CC BY 4.0 and the credit lines have been constant across Hansen
+releases, but this is a licence read from a neighbouring version of the product,
+not from the exact one, and it is written down that way.
+
 ### Attribution line for the README
 
 CC BY-IGO requires attribution for both datasets. Paste-ready:
@@ -60,6 +116,24 @@ CC BY-IGO requires attribution for both datasets. Paste-ready:
 > Population: Nigeria Subnational Population Statistics (COD-PS, 2020 legacy
 > release), UNFPA and the United States Census Bureau PEPFAR program, via UNFPA
 > on the Humanitarian Data Exchange. Licensed CC BY-IGO. Accessed 21 August 2026.
+>
+> Electrification: Nigeria — Global Electrification Platform (GEP) V2, World
+> Bank Group, via energydata.info. Licensed CC BY 4.0. Accessed 26 August 2026.
+> Scenario `ng-2-0_0_0_0_0_0`.
+>
+> Poverty: Nigeria Aggregated Poverty map, KTH Royal Institute of Technology,
+> derived from WorldPop, via energydata.info. CC0 1.0. Release year 2013.
+> Accessed 26 August 2026.
+
+> Tree cover loss: Hansen/UMD/Google/USGS/NASA, via Global Forest Watch,
+> "Location of tree cover loss in Nigeria", accessed 27 August 2026 from
+> www.globalforestwatch.org. Licensed CC BY 4.0. Underlying method: Hansen et
+> al., *Science* 342 (2013): 850–53.
+
+CC BY 4.0 requires the credit line to appear wherever the data are **displayed**,
+not only where they are cited. Any chart or dashboard panel built on tree cover
+loss carries `Source: Hansen/UMD/Google/USGS/NASA` on the panel itself. That is
+the licence condition, not a stylistic choice.
 
 ### "Modified" is not "vintage"
 
@@ -203,6 +277,82 @@ remaining 737 carry a single fill-down value in `ADM0_PCODE` and nothing else.
 asserting row counts, so the assertion tests records rather than whatever the
 parser happened to reach.
 
+### 6. GEP carries coordinates, not an LGA — and the assignment is lossy
+
+GEP publishes 708,536 settlement clusters with longitude and latitude and no
+admin-2 identifier. `pipeline/spatial_join.py` assigns each to the LGA polygon
+containing its single representative point — the one documented exception to
+"all transformation in SQL", because SQLite has no geometry engine.
+
+That assignment is not free. Where a cluster is large and the LGAs beneath it
+are small, one point hands an entire settlement's population to whichever LGA it
+happens to land in. Measured two ways in `sql/04_gep_quality.sql`, this affects
+**169 of 774 LGAs and 54.4 million people**; 8.1 million are attributed to the
+wrong *state*. Nothing is lost nationally — GEP's total is 1.006× the census
+projection — so this is redistribution, not measurement error.
+
+Every GEP-derived indicator therefore carries a `gep_flag`. Full method and its
+nine-point review: `docs/gep_quality_review.md`.
+
+**Not yet used, and worth knowing:** the same dataset page publishes a
+**Settlement Clusters (SHP ZIP)** resource — the cluster geometries themselves.
+Overlaying polygons instead of assigning centroids would remove most of this
+problem at source rather than measuring it. Recorded here as a Stage 2+ option,
+not done.
+
+### 7. The poverty map is a 2013 layer on different boundaries
+
+Two things must travel with any poverty figure from this source.
+
+**Vintage.** The dataset's release year is 2013 and it was last touched in 2017.
+It is being joined to 2020 population on 2019-endorsed boundaries. That is a
+seven-year gap and it must be stated wherever a poverty number appears.
+
+**Boundaries.** It has 775 rows, not 774, because it uses **GADM** units rather
+than the COD, and it is keyed on **names** rather than P-codes. Note 4 of this
+document explains why a name join is dangerous here: 774 LGAs carry only 768
+distinct names. The reconciliation is deliberately deferred to SQL, will be done
+explicitly, and every unmatched name will be listed rather than dropped.
+
+### 8. Tree cover loss carries four separate cautions
+
+**a. Absence is recorded as absence, not as zero.**
+`treecover_loss_by_region__ha.csv` holds **853 state-year rows, not 37 × 25 =
+925**. A state-year with no recorded loss is missing from the file rather than
+present with a zero. Aggregating without accounting for that would compute means
+over the wrong denominator and make the worst-affected states look average.
+
+**b. There is a methodology break at 2011.** GFW's own widget states it: *"The
+data from 2011 onward were produced with an updated methodology that may capture
+additional loss. Comparisons between the original 2001-2010 data and future
+years should be performed with caution."*
+
+This is the same class of problem as the COD-PS 2020/2022 break in note 3, and
+it gets the same answer. A single 2001–2025 total per state would sum across a
+change in the instrument and present it as a change in Nigeria's forests.
+**Decision: use 2011–2025 only, and say so** — or, if the full series is ever
+used, report the two periods separately and never as one figure.
+
+**c. The boundaries are GADM v3.6, not the COD.** GFW attributes loss to
+administrative units from the Global Administrative Areas database — the same
+boundary family as the poverty map in note 7, and a different one from the spine
+this project is built on. At state level the two agree on a count of 37, which
+makes it tempting to assume they agree on which 37. The mapping from
+`adm1__id` 1–37 to state must be made through `adm1_metadata.csv` and then
+matched to COD state names **explicitly, with unmatched names listed**. Note 4
+is the reason: names are not identifiers, and a silent name join fails without
+raising anything.
+
+**d. "Tree cover loss" is not "deforestation".** GFW is explicit: loss includes
+change in both natural and planted forest and need not be human-caused. It is
+stand-level replacement of vegetation over 5 m detected at 30 m resolution. Used
+here as a proxy for environmental pressure, it must be named as tree cover loss
+in the deliverable, never as deforestation.
+
+**e. It is state-level only**, so it enters the segmentation as a **state
+attribute applied to every LGA within it** — not an LGA measurement, and
+labelled as such wherever it appears.
+
 ## Verification status (Stage 0 exit criteria)
 
 - [x] Every source recorded with URL, date, licence and vintage
@@ -212,3 +362,26 @@ parser happened to reach.
 - [x] Written note on how names differ between sources
 - [x] Unit of analysis confirmed as the LGA; coverage is far above the ~85%
       threshold that would have forced the senatorial-district fallback
+
+## Verification status (Stage 1 sources)
+
+Added 27 August 2026. These three sources arrived on 26 August and were not
+recorded here at the time — the acquisition story went into
+`DATA_ACQUISITION_CHECKLIST.md` and never reached this file. Four other files,
+including `pipeline/load_raw.py`, pointed here for detail that was not present.
+That gap is closed by the rows and notes above.
+
+- [x] GEP recorded with URL, date, licence (CC BY 4.0), vintage and row count
+- [x] Poverty map recorded — CC0 1.0, and its 2013 vintage flagged as a
+      limitation rather than left in a metadata field
+- [x] GFW recorded with URL, date, vintage and row count
+- [x] **GFW licence confirmed** — CC BY 4.0, read 27 August 2026 from the widget
+      information panel and the upstream UMD Global Forest Change page. Display
+      credit, citation credit and the version caveat all recorded above.
+- [ ] **GADM-to-COD state mapping verified** — outstanding. Two Stage 1 sources
+      (GFW, poverty) use GADM boundaries; the spine uses the COD. No figure
+      from either is published until the name reconciliation is done in SQL and
+      its unmatched rows listed. Note 7 and note 8c.
+- [x] Scenario identity of `ng-2-0_0_0_0_0_0` verified against the data itself
+      rather than documentation; method in `DATA_ACQUISITION_CHECKLIST.md`
+- [x] Cost of the GEP spatial join measured, not assumed — note 6
