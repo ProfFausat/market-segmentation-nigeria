@@ -310,10 +310,206 @@ LIMIT 10;
 
 
 -- ------------------------------------------------------------
--- Q7 onwards: to come. Candidates once electrification and settlement
--- data are joined:
---   - Which LGAs have the highest population density, and where do they sit?
---   - Which LGAs combine high population with low electrification?
+-- Q7. How much of Nigeria can the electrification data actually speak for?
+--
+-- Why it matters: every energy indicator in this project comes from the
+-- GEP settlement model. Before any of them is used to recommend a market,
+-- it has to be established where they describe the right place. This is
+-- the question a client should ask and usually does not.
+--
+-- The measure and its construction are in sql/04_gep_quality.sql.
+-- REVISED 27 Aug 2026 — see the note at the foot of this question.
+-- ------------------------------------------------------------
+
+SELECT gep_flag,
+       COUNT(*)                                          AS n_lgas,
+       ROUND(100.0 * COUNT(*)
+             / (SELECT COUNT(*) FROM lga_base), 1)       AS pct_of_lgas,
+       SUM(cod_pop)                                      AS population,
+       ROUND(100.0 * SUM(cod_pop)
+             / (SELECT SUM(pop_total) FROM lga_base), 1) AS pct_of_population
+FROM gep_quality
+GROUP BY gep_flag
+ORDER BY n_lgas DESC;
+
+-- ANSWER (27 Aug 2026):
+--   flag            LGAs   % LGAs      population   % population
+--   ok               600     77.5     150,470,181        73.4
+--   suspect          169     21.8      51,317,202        25.0
+--   no_clusters        4      0.5       3,121,837         1.5
+--   no_cod_pop         1      0.1            NULL         NULL
+--
+-- So the honest headline is: the electrification data speaks confidently for
+-- about three quarters of Nigeria's population, and 54,439,039 people —
+-- 26.6% — live in LGAs where it cannot be trusted without a caveat.
+--
+-- BACKGROUND — WHAT IS BEING MEASURED
+-- GEP publishes 708,536 settlement clusters with coordinates but no LGA.
+-- Each was assigned to an LGA by point-in-polygon on its single
+-- representative coordinate (pipeline/spatial_join.py). Where a cluster is
+-- large and the LGAs beneath it are small, that one point hands the whole
+-- cluster's population to whichever LGA it happens to fall in.
+--
+-- TWO TESTS, BECAUSE ONE WAS NOT ENOUGH
+--
+-- TEST 1 — POPULATION RATIO. Sum GEP's own population per LGA and compare it
+-- to the COD population used everywhere else. Wide disagreement means the
+-- clusters are not that LGA's clusters.
+--
+-- Read what this test does NOT say. It measures NET displacement. An LGA that
+-- loses 200,000 people to one neighbour and gains 200,000 from another reads
+-- 1.0 and passes, with every indicator describing somewhere else. Agreement
+-- is a NECESSARY condition for trusting an LGA, never a sufficient one.
+--
+-- TEST 2 — FOREIGN-STATE SHARE. GEP ships its own Admin1 (state) label on
+-- every cluster, produced independently of this project's spatial join.
+-- 28,801 clusters (4.1%) carrying 8,097,966 people sit in a different state
+-- from the one GEP itself assigns them. Under the single-test version of this
+-- question, 87% of those people lived in LGAs flagged 'ok'.
+--
+-- Fifteen LGAs are caught by Test 2 and by nothing else. Ado-Odo/Ota (Ogun)
+-- reads pop_ratio 0.919 — as close to agreement as anything in the table —
+-- and 77% of the population attributed to it belongs to another state.
+-- Aguata (Anambra) reads 1.415 and is 88.8% foreign. All fifteen were 'ok'
+-- in the previous answer and would have carried recommendations.
+--
+-- Test 2 has an honest limit: GEP's Admin1 may itself come from a different
+-- boundary vintage, so a disagreement says two independent assignments
+-- disagree, not which one is wrong. That is what a validation is.
+--
+-- NOTHING IS LOST NATIONALLY. GEP totals 206,139,999 against COD's
+-- 204,909,220 — a ratio of 1.006. The people are all accounted for; they are
+-- attributed to the wrong LGA. Every excess is matched by a deficit next door:
+--
+--   Maiduguri 0.26  <->  Jere 5.14
+--   Kano Municipal 0.00  <->  Kumbotso 2.75, Gwale 2.31
+--   Ibadan South East 0.02  <->  Ibadan South West 1.68
+--   Sokoto North 0.00  <->  Sokoto South 2.09
+--   Onitsha South 0.00  <->  Ogbaru 3.06
+--
+-- That national figure BOUNDS the problem; it does not explain it. A ratio of
+-- 1.006 would also appear if GEP's raster had been scaled to a national
+-- control total, in which case it proves nothing about any LGA. Tested:
+-- state-level ratios run 0.710 (FCT) to 1.110 (Ondo), Lagos 0.889 — so GEP is
+-- NOT calibrated state by state and the national figure is not vacuous. It
+-- still cannot separate redistribution between LGAs from GEP and the NPC
+-- projection genuinely disagreeing about where Nigerians live.
+--
+-- The FCT at 0.710 is worth its own line: the capital is missing 29% of the
+-- population GEP's own account of it should contain.
+--
+-- Most major Nigerian cities appear somewhere in the flagged list:
+-- Kano, Ibadan, Maiduguri, Onitsha, Sokoto, Kaduna, Aba, Calabar,
+-- Ilorin, Owerri, Jalingo, Minna and Lagos all have at least one LGA
+-- reading far above or far below 1.0.
+--
+-- DIRECTION MATTERS, AND IS NOW RECORDED
+--   balanced   615 LGAs   154,732,931
+--   donated     87 LGAs    31,040,455   its clusters went elsewhere
+--   absorbed    67 LGAs    16,013,997   it holds a neighbour's
+--   none         5 LGAs     3,121,837
+-- A donor's indicators are built from a fragment of itself. An absorber's are
+-- built from itself blended with next door. Degraded is not the same as
+-- absent, and Stage 2 should not treat them as one label.
+--
+-- THE FOUR WITH NO CLUSTERS, AND THE ONE WITH NO POPULATION
+-- Four inner-Lagos LGAs — Agege, Ajeromi-Ifelodun, Mushin and Shomolu —
+-- hold 3,121,837 people between them and have no settlement clusters at all.
+-- Ajeromi-Ifelodun alone is Nigeria's third most populous LGA (Q2). Their
+-- clusters were absorbed by neighbours; they will be NULL on every GEP
+-- indicator.
+--
+-- Bakassi is a separate case and is now labelled separately as 'no_cod_pop'.
+-- It has no population record either — the publisher thinks it uninhabited
+-- and folds any residents into Akpabuyo (docs/data_provenance.md). Having
+-- no clusters is the correct reading for it, not a defect. The previous
+-- version of this question counted it with the four Lagos LGAs, which made
+-- "five LGAs with no clusters" a sentence about two different things.
+--
+-- CLUSTER COUNT DOES NOT PROTECT AGAINST THIS
+-- The obvious hypothesis — that this is a dense-city artefact — is wrong.
+-- Ukum (Benue) has 6,275 clusters and reads 1.58. Zaki (Bauchi) has 4,335
+-- and reads 1.83. Yamaltu/Deba (Gombe) has 2,396 and reads 2.95. What
+-- matters is cluster size relative to LGA size, not the count.
+--
+-- AN INDEPENDENT CORROBORATION
+-- Akpabuyo (Cross River) reads 0.434. Akpabuyo is the LGA into which the
+-- publisher folds Bakassi's population, so its COD figure is inflated by
+-- residents who live elsewhere and the ratio comes out low. A caveat read
+-- on a dataset page reappears, unprompted, in a completely separate
+-- measurement.
+--
+-- BOTH THRESHOLDS ARE CHOICES AND MUST BE QUOTED WITH THEIR SENSITIVITY
+--
+-- Ratio band, expressed as a factor so gain and loss are treated alike:
+--   1.3  (0.769-1.300):  278 LGAs
+--   1.5  (0.667-1.500):  154 LGAs   <- used
+--   1.7  (0.588-1.700):   96 LGAs
+--   2.0  (0.500-2.000):   54 LGAs
+--
+-- Foreign-state share:
+--   >  5%:  135 LGAs   34,034,109
+--   > 10%:   79 LGAs   19,378,547
+--   > 25%:   22 LGAs    7,128,366   <- used
+--   > 50%:   13 LGAs    5,130,224
+--
+-- Both roughly halve at every step with no plateau anywhere. There is no
+-- natural cut-off in either: the disagreement is continuous, not two clean
+-- populations of good and bad. "169 LGAs" is a statement about the two
+-- thresholds as much as about the country, and the figures travel together.
+-- `pop_ratio` and `pct_foreign` are retained as continuous columns because
+-- they, not the label, are the real measurement.
+--
+-- WHAT IS STILL NOT DETECTED
+-- 47 LGAs holding 10,332,548 people pass as 'ok' while carrying between 10%
+-- and 25% foreign-state population — under the threshold, not clean. The
+-- highest 'ok' reading is 23.7%. And no test here can see a swap between two
+-- LGAs of the SAME state that happens to balance. This measure narrows the
+-- untrusted set. It does not certify the remainder, and the write-up must not
+-- claim it does.
+--
+-- 
+-- Strategic and Operational Implications for Analysis
+-- The spatial misattribution introduced when GEP's settlement clusters are assigned to LGA boundaries directly affects 
+-- the validity of every energy indicator in this analysis, requiring an operational shift in how the final segmentation is 
+-- executed and presented to stakeholders. Because 26.6% of the national population (54.4M people) resides in affected LGAs, 
+-- I will implement a three-part mitigation strategy:
+-- •	Dual-Track Cluster Sensitivity: Stage 2 cluster analysis will be run twice: once using the complete dataset and once 
+--      excluding all flagged LGAs. If the cluster topology remains stable across both runs, the market segmentations is robust 
+--      to the misattribution. If the structure shifts, that divergence will be published explicitly as an analytical finding rather 
+--      than masked as a baseline assumption.
+-- •	Transparent Risk Flagging: I will never present a flagged LGA without its data-quality indicator (suspect, no_clusters, 
+--      or no_cod_pop). Decision-makers will see the caveats directly alongside the opportunity metrics.
+-- •	Granular Reporting: I will avoid relying solely on aggregate percentages in the final deliverable. Instead, I will 
+--      explicitly list the impacted LGAs so regional operators know exactly where local ground-truthing is required.
+-- These figures bound the problem rather than close it. The 26.6% is a function of two chosen thresholds — at a tighter band 
+-- the affected share is substantially larger. The remaining 73.4% is not verified but merely unfalsified: the ratio test cannot detect a balanced exchange between neighbours, and 47 LGAs holding 10.3M people pass as clean while still carrying between 10% and 25% of their population from another state. The mitigation strategy above narrows the untrusted set. It does not certify the remainder.
+
+-- Contextual Considerations
+-- A practical detail softens but does not eliminate the analytical risk for mini-grid and off-grid developers:
+-- •	Urban Mitigation (Population Ratios): Large population ratio distortions cluster heavily in dense urban centers 
+--      e.g., Kano Municipal, Ibadan South East, Sokoto North). Because these metro areas already feature higher grid-penetration rates, 
+--      they fall outside the primary target profile for decentralized off-grid deployment.
+-- •	Peri-Urban Vulnerability (Foreign-State Discrepancies): Displacements driven by cross-state clusters do not follow this urban pattern. 
+--      Key manufacturing and peri-urban expansion corridors like Ado-Odo/Ota, Ifo, and Shagamu in Ogun State represent primary targets for 
+--      off-grid power investments, yet they display significant spatial distortion. Ground-level verification remains non-negotiable for these 
+--      high-value markets.
+
+
+-- REVISION NOTE — WHY THE NUMBERS CHANGED ON 27 AUG 2026
+-- This question first answered ok 667 / suspect 102 / no_clusters 5. A methods
+-- review (docs/gep_quality_review.md) found that the single ratio test could
+-- not see balanced exchange, that the 0.5-1.5 band was symmetric in
+-- appearance only, and that a second independent test was already available
+-- in a column the project had loaded and never used. All three were fixed.
+-- The finding did not weaken; it got larger and better evidenced.
+
+
+-- ------------------------------------------------------------
+-- Q8 onwards: to come, once the GEP indicators are built:
+--   - Which LGAs have the highest share of population without electricity?
+--   - Where is off-grid the least-cost technology for most of the unserved?
+--   - Which LGAs combine high unserved population with low cost to serve?
 --   - How much of each state's unserved population sits in its top 5 LGAs?
 --   - Which senatorial districts would be chosen if the unit were coarser?
 -- ------------------------------------------------------------
