@@ -505,11 +505,192 @@ ORDER BY n_lgas DESC;
 -- The finding did not weaken; it got larger and better evidenced.
 
 
+
+
 -- ------------------------------------------------------------
--- Q8 onwards: to come, once the GEP indicators are built:
+-- Q8. Which LGAs combine the largest unserved population with the
+--     lowest cost to serve?
+--
+-- The first question in this catalogue that answers the client rather
+-- than the data. Everything it needs is in lga_gep_indicators; no join.
+--
+-- "Combine" is three AND conditions, each measured against the data's own
+-- distribution rather than a number chosen in advance:
+--   - more unserved people than average
+--   - cheaper per person than average
+--   - more reliant on stand-alone solar than average  <- the off-grid test,
+--     because an LGA the grid will reach by 2030 is not this client's market
+--
+-- The flag is shown, not filtered. A decision-maker sees the caveat beside
+-- the opportunity and weighs it, per the Transparent Risk Flagging
+-- commitment in Q7.
+-- ------------------------------------------------------------
+
+SELECT lga_name,
+       state_name,
+       gep_flag,
+       unserved_pop_2020,
+       investment_per_capita_usd
+FROM lga_gep_indicators
+WHERE n_clusters > 0
+  AND unserved_pop_2020        > (SELECT AVG(unserved_pop_2020)        FROM lga_gep_indicators)
+  AND investment_per_capita_usd < (SELECT AVG(investment_per_capita_usd) FROM lga_gep_indicators)
+  AND pct_standalone_pv_2030    > (SELECT AVG(pct_standalone_pv_2030)   FROM lga_gep_indicators)
+ORDER BY investment_per_capita_usd ASC
+LIMIT 20;
+
+-- ANSWER (29 Aug 2026). 235 LGAs pass all three filters, holding 47,903,787
+-- unserved people -- 57% of the national unserved total in 30% of LGAs.
+-- The twenty cheapest:
+--
+--   lga_name          state     flag      unserved   $/capita
+--   Guzamala          Borno     suspect    120,288      57.00
+--   Ganjuwa           Bauchi    ok         353,962      57.29
+--   Sule-Tankarkar    Jigawa    ok         143,611      58.28
+--   Yusufari          Yobe      ok         138,474      58.29
+--   Nganzai           Borno     suspect    128,435      58.81
+--   Jakusko           Yobe      suspect    257,237      58.85
+--   Magumeri          Borno     suspect    183,153      58.96
+--   Fune              Yobe      ok         401,584      58.97
+--   Bursari           Yobe      ok         119,907      59.75
+--   Gubio             Borno     suspect    194,394      61.71
+--   Ningi             Bauchi    ok         455,454      61.85
+--   Gamawa            Bauchi    ok         367,667      62.46
+--   Mariga            Niger     ok         281,744      63.33
+--   Yunusari          Yobe      ok         167,455      63.46
+--   Wase              Plateau   ok         164,545      63.52
+--   Qua'an Pan        Plateau   ok         301,362      64.43
+--   Geidam            Yobe      ok         138,503      64.78
+--   Mobbar            Borno     ok         130,129      64.83
+--   Kaga              Borno     ok         137,162      65.24
+--   Gulani            Yobe      suspect    191,557      65.37
+--
+-- THE ANSWER IS NOT THIS LIST. It is what the list reveals about the
+-- question. Three things, in ascending order of importance.
+--
+--
+-- 1. THE GEOGRAPHY. Take a look at the second column.
+--
+-- Of the forty cheapest LGAs: Yobe 8, Borno 8, Bauchi 5, Plateau 4,
+-- Niger 3, Jigawa 3, Zamfara 2, Taraba 2, Nasarawa 2, Sokoto, Kebbi,
+-- Adamawa 1 each. Borno and Yobe alone are sixteen of forty. Across the
+-- full 235, Borno, Yobe and Adamawa hold 40 LGAs and 7.6 million unserved.
+--
+-- The model has optimised cost per person and market size. It has no
+-- variable for whether an operator can reach a place, keep staff safe, or
+-- find customers still living at the coordinates. Guzamala, Magumeri,
+-- Gubio, Nganzai, Mobbar and Kaga are Borno LGAs. 
+-- 
+-- While the model's output is mathematically accurate, presenting these
+-- results without contextualizing the severe security and ground-level 
+-- logistics challenges in these areas would be commercially misleading and irresponsible.
+--
+-- 2. A HYPOTHESIS, TESTED AND MOSTLY WRONG.
+--
+-- Six of the top twenty are flagged 'suspect' -- 30%, against 12% across
+-- all 235. The proposed explanation was that the quality flag is partly
+-- detecting conflict displacement: the census projection says people live
+-- in Magumeri, the settlement model finds them elsewhere, and pop_ratio
+-- registers the disagreement.
+--
+-- Tested:
+--   North East (6 states)   112 LGAs   30 suspect   26.8%
+--   rest of Nigeria         657 LGAs  139 suspect   21.2%
+--   Borno alone              27 LGAs   10 suspect   37.0%
+--   Yobe alone               17 LGAs    4 suspect   23.5%
+--
+-- Borno is genuinely elevated. Yobe sits at the national rate. The North
+-- East as a region is barely above the rest of the country. The hypothesis
+-- holds for one state and was stated far too broadly. Recorded here as
+-- partially refuted rather than quietly dropped -- and it does NOT explain
+-- the concentration in the top twenty, which needs another explanation.
+--
+--
+-- 3. THE ONE THAT INVERTS THE RECOMMENDATION.
+--
+-- Why are these LGAs cheap? Not necessarily because they are easy or attractive markets to serve.
+--
+--                       demand kWh/cap/yr   tier   $/capita   elec rate
+--   top 20 cheapest              13.6       1.35      61.4       11.4%
+--   all 235 shortlisted          28.7       1.67      79.8       23.3%
+--   all 769 with clusters       170.1       2.58     164.6       53.6%
+--
+-- The twenty cheapest LGAs are cheap because THE MODEL EXPECTS PEOPLE
+-- THERE TO USE 13.6 kWh PER YEAR -- one twelfth of the national average.
+-- Investment per capita is roughly proportional to the size of the system
+-- installed, and you install a very small system for someone assumed to
+-- consume almost nothing. 13.6 kWh a year is a lamp and a phone charger.
+--
+-- This creates an important distinction: in this model, “lowest cost to serve” is closely linked to “lowest expected consumption.”
+-- For a pay-as-you-go operator, however, lower consumption also means lower potential revenue per customer.
+-- What looks like a low-cost market can therefore also be a low-revenue market, with much thinner margins.
+-- 
+--
+-- The electrification rate in those same twenty LGAs is 11.4% against 53.6%
+-- nationally. The need there is real and severe. But NEED IS NOT MARKET. Distinguishing 
+-- the two is precisely what market segmentation is supposed to do.
+--
+--
+-- WHAT THIS MEANS FOR THE METHOD
+--
+-- `investment_per_capita_usd` must not be used as a standalone ranking
+-- variable. It is only interpretable beside demand. A commercially honest
+-- measure compares what a connection costs against what it can earn --
+-- demand x population against investment -- and that is a feature to build
+-- for Stage 2, not a filter to bolt onto Q8.
+--
+-- CAN A SECURITY VARIABLE BE DERIVED FROM WHAT WE HAVE? No, and it should
+-- not be faked. `NightLights` is the tempting candidate -- conflict
+-- depopulates settlements and light intensity falls -- but GEP uses night
+-- lights in calibrating electrification, so a low value cannot be
+-- separated into "no power" and "no people". `TravelHours`, `RoadDist` and
+-- `GridPenalty` measure remoteness and terrain, not risk. Building a
+-- "security score" out of any of them would dress an inference as a
+-- measurement, which is the one thing this project does not do.
+--
+-- Two honest responses. Declare the exposure as a stated limitation on
+-- every ranking, using knowledge from outside the dataset and labelled as
+-- such -- free, and done from here on. Or acquire a georeferenced conflict
+-- layer (ACLED publishes one) and aggregate it to LGA as a screening
+-- variable -- real acquisition work, and a Stage 2+ decision.
+--
+--
+-- DECISION: THE NORTH EAST IS REPORTED, NOT SCREENED OUT.
+--
+-- The alternative was to filter Borno, Yobe and Adamawa out of every
+-- ranking and hand over a shorter, tidier list. That is rejected here.
+--
+-- Screening them out would silently remove 40 LGAs and 7.6 million
+-- unserved people from the analysis and present the remainder as if it
+-- were the whole country. The reader would never know the exclusion had
+-- happened, and could not disagree with a judgement they were not shown.
+-- It would also make a commercial decision -- what risk is acceptable --
+-- on behalf of a client who is far better placed to make it. An operator
+-- already working in Maiduguri and one considering its first Nigerian
+-- market will weigh Guzamala very differently, and neither is served by
+-- an analyst who quietly decided for them.
+--
+-- So these LGAs stay in every ranking, and every ranking that contains
+-- them carries the caveat beside them. This is the same principle as the
+-- gep_flag: name the limitation and let the decision-maker weigh it,
+-- rather than resolving it out of sight.
+--
+-- What that means in practice for the deliverable:
+--   - Borno, Yobe and Adamawa rows appear, marked for security and
+--     logistics exposure the same way flagged rows are marked for data
+--     quality.
+--   - The exposure is stated as knowledge from outside the dataset, and
+--     labelled as such. It is not derived from any column here, because
+--     no column here can carry it -- see the section above.
+--   - Any summary figure quoting the 235 shortlisted LGAs also states how
+--     many sit in those three states, so the headline cannot be read
+--     without the qualification.
+
+
+-- ------------------------------------------------------------
+-- Q9 onwards: to come.
 --   - Which LGAs have the highest share of population without electricity?
---   - Where is off-grid the least-cost technology for most of the unserved?
---   - Which LGAs combine high unserved population with low cost to serve?
 --   - How much of each state's unserved population sits in its top 5 LGAs?
+--   - Where does demand justify a mini-grid rather than a solar home system?
 --   - Which senatorial districts would be chosen if the unit were coarser?
 -- ------------------------------------------------------------
