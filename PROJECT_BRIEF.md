@@ -56,7 +56,12 @@ Naming these now, so they cannot be rationalised later:
 - A notebook comparing clustering methods, with the chosen segmentation defended
 - Named segment profiles with operating recommendations
 - A published Power BI dashboard, including a map, and a one-page Excel summary
-- A two-page client brief for an expansion director
+- A written report for an expansion director, **as long as the findings require
+  and built around its figures** (changed 4 Sep 2026 from a two-page cap: two
+  pages could not carry the GEP quality finding, the cost-versus-demand
+  inversion, the North East decision and the segmentation's own limits without
+  dropping one of them, and dropping one would contradict the standard of
+  honesty below)
 - A runnable pipeline, tracked in MLflow
 
 ## Standard of honesty

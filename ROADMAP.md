@@ -53,8 +53,55 @@ Deliverable: `reports/segment_profiles.md`.
 
 ## Stage 4 — Communication
 
-A published Power BI dashboard including a map, plus a one-page Excel summary and
-a two-page client brief for an expansion director.
+A published Power BI dashboard including a map, a one-page Excel summary, and a
+written report for an expansion director.
+
+**Changed 4 Sep 2026: the report is no longer capped at two pages.** It runs as
+long as the findings need and is built around its figures rather than around its
+paragraphs. The reason is that the two-page format could not carry this project's
+actual output without omission: the GEP quality finding (Q7), the cost-versus-
+demand inversion (Q8), the North East decision, the segmentation's own limits,
+and the segment map cannot be compressed into two pages, and choosing which to
+drop would contradict the standard of honesty this project is built on.
+
+Length is not licence. The report is structured so a reader can stop early and
+still have the answer: findings first, method behind them, every figure carrying
+its own caption.
+
+### Six rules that keep "as long as it needs to be" honest
+
+Agreed 4 Sep 2026, at the same time as the change above. Removing the page cap
+removes a constraint that was doing real work, so these replace it. They bind
+the same way the analytical thresholds in `sql/` do.
+
+1. **Cap the summary, not the report.** The two-page discipline relocates to the
+   front rather than disappearing. Page one stands alone and answers the
+   client's question completely. Everything after it is evidence for a reader
+   who wants it. A director reads one page; a reviewer reads all of it.
+
+2. **Every section names the decision it informs.** If the sentence "a reader
+   needs this in order to decide ___" cannot be finished, the section is cut.
+   This is the rule that removes material that is interesting but not useful.
+
+3. **One page per finding, hard.** A local cap, not a global one. Q7 gets a
+   page. Q8 gets a page. The segmentation gets a page. Prioritisation happens
+   inside each section instead of being abandoned across the whole document.
+
+4. **Figures lead, prose supports.** The segment map carries more than three
+   paragraphs would. A section with no figure should be challenged: it may be a
+   sentence rather than a section.
+
+5. **Method goes to an appendix, and mostly stays in the repository.** The
+   `sql/` files already carry the reasoning in full. The report points at them
+   rather than reproducing them.
+
+6. **Read it aloud before shipping.** Anywhere the author skims their own
+   document, the client stops reading entirely.
+
+**And pre-register the structure.** The table of contents and a page budget per
+section are written BEFORE drafting, the same discipline this project applies to
+thresholds, fallbacks and expected row counts. A section that then overruns its
+budget is a visible decision rather than an invisible drift.
 
 ## Stage 5 — Pipeline
 
@@ -85,6 +132,8 @@ An endpoint that assigns an unseen LGA to a segment.
 - A repository whose SQL is the first thing a reader notices, and whose query
   catalogue can be read without running anything.
 - A published Power BI dashboard with a map.
+- A visual written report, as long as the findings require, with every
+  limitation stated in it rather than left for a reader to discover.
 - A named, defensible segmentation of Nigerian LGAs with a commercial
   recommendation attached to each segment.
 - A reproducible pipeline from raw public files to segment assignment.

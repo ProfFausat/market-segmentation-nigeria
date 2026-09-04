@@ -67,6 +67,16 @@
 --      columns exist but are effectively unpopulated.
 --    - `ElecStatusIn2030`. Constant, see decision 2.
 --
+--    - `TransformerDist`. It is **9999 for all 708,536 clusters** -- an
+--      OnSSET "no data" sentinel, not a distance. GEP has no transformer
+--      locations for Nigeria. An earlier version of this file averaged it
+--      into a `transformer_dist_km` column that read 9,999 km for every
+--      LGA in the country. Caught on 30 Aug 2026 by looking at the
+--      standard deviation of every feature before clustering, which is
+--      what the zero-variance check below now does automatically. Every
+--      other distance column (`SubstationDist`, `RoadDist`,
+--      `CurrentMVLineDist`, `MinGridDist2030`, `TravelHours`) is clean.
+--
 --    Health facility counts (`Cat_1`, `Cat_2`, `Cat_3`) total 19,450 and
 --    ARE used: anchor loads are exactly what a mini-grid developer sizes
 --    around.
@@ -95,7 +105,7 @@ SELECT id,
        Pop2020, Pop2030, ElecPopCalib, ElecStart,
        FinalElecCode2030,
        GridCellArea,
-       TravelHours, RoadDist, TransformerDist, SubstationDist,
+       TravelHours, RoadDist, SubstationDist,
        CurrentMVLineDist, MinGridDist2030,
        GHI, WindCF, GridPenalty,
        PerCapitaDemand, TotalEnergyPerCell, Tier,
@@ -169,9 +179,6 @@ SELECT
     CASE WHEN SUM(g.Pop2020) > 0 THEN ROUND(
       SUM(g.RoadDist * g.Pop2020) / SUM(g.Pop2020), 3)
     END                                                      AS road_dist_km,
-    CASE WHEN SUM(g.Pop2020) > 0 THEN ROUND(
-      SUM(g.TransformerDist * g.Pop2020) / SUM(g.Pop2020), 3)
-    END                                                      AS transformer_dist_km,
     CASE WHEN SUM(g.Pop2020) > 0 THEN ROUND(
       SUM(g.CurrentMVLineDist * g.Pop2020) / SUM(g.Pop2020), 3)
     END                                                      AS mv_line_dist_km,
@@ -276,6 +283,35 @@ SELECT 'every row flagged',
        COUNT(*), 0,
        CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'FAIL' END
 FROM lga_gep_indicators WHERE gep_flag IS NULL;
+
+-- NO INDICATOR MAY BE CONSTANT.
+--
+-- A column with zero variance is not an indicator. It is either a
+-- sentinel value the source uses for "no data", or a bug. Either way it
+-- carries no information, and it will sit in a feature matrix looking
+-- like a real number.
+--
+-- This check exists because `TransformerDist` was 9999 for every cluster
+-- in Nigeria and this file averaged it into an LGA-level column without
+-- anyone looking. Add any new indicator to the list below.
+SELECT 'no indicator is constant' AS check_name,
+       COUNT(*) AS actual, 0 AS expected,
+       CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'FAIL' END AS result
+FROM (
+    SELECT 'elec_rate_2020'            AS col, COUNT(DISTINCT elec_rate_2020)            AS n FROM lga_gep_indicators
+    UNION ALL SELECT 'investment_per_capita_usd', COUNT(DISTINCT investment_per_capita_usd) FROM lga_gep_indicators
+    UNION ALL SELECT 'lcoe_usd_per_kwh',          COUNT(DISTINCT lcoe_usd_per_kwh)          FROM lga_gep_indicators
+    UNION ALL SELECT 'demand_kwh_per_capita',     COUNT(DISTINCT demand_kwh_per_capita)     FROM lga_gep_indicators
+    UNION ALL SELECT 'demand_tier',               COUNT(DISTINCT demand_tier)               FROM lga_gep_indicators
+    UNION ALL SELECT 'travel_hours',              COUNT(DISTINCT travel_hours)              FROM lga_gep_indicators
+    UNION ALL SELECT 'road_dist_km',              COUNT(DISTINCT road_dist_km)              FROM lga_gep_indicators
+    UNION ALL SELECT 'mv_line_dist_km',           COUNT(DISTINCT mv_line_dist_km)           FROM lga_gep_indicators
+    UNION ALL SELECT 'solar_ghi',                 COUNT(DISTINCT solar_ghi)                 FROM lga_gep_indicators
+    UNION ALL SELECT 'settled_density',           COUNT(DISTINCT settled_density)           FROM lga_gep_indicators
+    UNION ALL SELECT 'health_facilities',         COUNT(DISTINCT health_facilities)         FROM lga_gep_indicators
+    UNION ALL SELECT 'pct_standalone_pv_2030',    COUNT(DISTINCT pct_standalone_pv_2030)    FROM lga_gep_indicators
+)
+WHERE n <= 1;
 
 
 -- ------------------------------------------------------------
