@@ -86,8 +86,13 @@ and the deliverable says so rather than presenting five opportunities where
 there are two.
 
 **How firmly this stands.** Silhouette 0.309 — weak separation. Bootstrap
-stability 0.992. Ward agglomerative clustering on the same matrix agrees with
-K-Means at ARI 0.807, so the partition is not an artefact of one algorithm.
+stability 0.992. Two independent checks, and they answer different questions.
+Ward agglomerative clustering on the same matrix agrees with K-Means at **ARI
+0.602** across all 769 LGAs: the broad structure survives a change of
+algorithm, though the exact boundaries move. Re-clustering only the 600 LGAs
+whose GEP data is flagged `ok` reproduces their assignment at **ARI 0.807**:
+the segmentation is not being driven by the LGAs the data-quality test cannot
+vouch for, which given the finding above is the check that matters more.
 DBSCAN returns a single cluster and 57 noise points: there are no density gaps
 in this data. These are **divisions of a continuum**, not natural kinds, and
 every figure in `reports/` is built to say so. **41 of 769 LGAs (5.3%) have a
