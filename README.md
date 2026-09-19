@@ -128,16 +128,17 @@ one division this data refuses.
 
 ## Status
 
-**In progress.** Stages 0 to 2 are complete. Stage 3 — segment profiling and
-operating recommendations — is next.
+**In progress.** Stages 0 to 3 are complete, except that the business-question
+catalogue holds 8 of its planned 15–20. Stage 4 — the Power BI dashboard and
+the written client report — is next.
 
 | Stage | Description | Status |
 |---|---|---|
 | 0 | Framing, data acquisition, provenance | Complete |
-| 1 | SQL: spine, joins, analysis base, question catalogue | Complete |
+| 1 | SQL: spine, joins, analysis base, question catalogue | Complete except the catalogue (8 of 15–20) |
 | 2 | Clustering: K-Means, hierarchical, DBSCAN compared | Complete |
 | 2b | Sub-clustering the largest segment against a null model | Complete |
-| 3 | Segment profiling and operating recommendations | Next |
+| 3 | Segment profiling and operating recommendations | Complete |
 | 4 | Power BI dashboard | Not started |
 | 5 | Port to PostgreSQL, MLflow-tracked pipeline | Not started |
 
@@ -177,7 +178,10 @@ pipeline/
   subcluster.py              is there structure inside the largest segment?
   check_subsegment_fit.py    diagnostic: does a sub-type belong to its parent?
   make_post_figure.py        a legible silhouette summary for slides and posts
+  profile_segments.py        every number the Stage 3 profiles may quote
 reports/
+  segment_profiles.md        the nine market-type profiles -- the deliverable
+  segment_profile_data.md    generated: the numbers those profiles cite
   k_selection.png            how k was chosen, and how flat the curve is
   segment_fingerprint.png    what distinguishes each market type
   segment_map.png            where each one is — small multiples
@@ -230,6 +234,9 @@ python pipeline/visualise.py
 python pipeline/subcluster.py
 sqlite3 data/processed/nigeria_lga.db < sql/11_subsegment_names.sql
 python pipeline/check_subsegment_fit.py
+
+# regenerate every number the profiles quote
+python pipeline/profile_segments.py
 ```
 
 `00_checks.sql` should return `PASS` on all nine checks; `04_gep_quality.sql`

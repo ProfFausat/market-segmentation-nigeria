@@ -12,11 +12,16 @@ Framed commercially, answered with a typology rather than a ranking.
 
 **Unit of analysis:** the Local Government Area — 774 nationally.
 
-**Scope:** clustering runs on all 774 LGAs. The dashboard additionally exposes
-the seven North-West states as a filtered view. The national segmentation is the
-result; the regional view is a lens onto it, useful because off-grid demand is
-concentrated there and because examining one region tests whether the segments
-carry real structure or merely recover geography.
+**Scope:** clustering runs on 769 of the 774 LGAs. Five are excluded because
+the source data cannot describe them: four Lagos LGAs with no settlement
+clusters in the electrification model, and Bakassi, which has no population
+figure. They are named wherever the exclusion matters.
+
+The dashboard additionally exposes the seven North-West states as a filtered
+view. The national segmentation is the result; the regional view is a lens
+onto it, useful because off-grid demand is concentrated there and because
+examining one region tests whether the segments carry real structure or merely
+recover geography.
 
 ---
 
@@ -27,7 +32,7 @@ Sources identified, downloaded unmodified into `data/raw/`, and documented in
 Unit of analysis confirmed as the LGA at 99.87% population coverage, so the
 fallback to 109 senatorial districts was not needed.
 
-## Stage 1 — SQL analysis base · in progress
+## Stage 1 — SQL analysis base · complete except the question catalogue
 
 All cleaning, joining and aggregation happens in `sql/`. The loader copies files
 into SQLite and does nothing else, so every transformation is readable.
@@ -36,20 +41,55 @@ Deliverables: the 774-LGA spine keyed on P-code, indicator tables joined onto it
 an assertion suite run after every rebuild, and a catalogue of 15–20 business
 questions with their queries and answers in `sql/10_business_questions.sql`.
 
-## Stage 2 — Clustering
+**Outstanding: the catalogue holds 8 questions, not 15–20.** The file
+`10_business_questions.sql` ends with "Q9 onwards: to come". Either the
+remaining questions get written or the target is revised down — but the stage
+is not finished while the file says so itself.
+
+## Stage 2 — Clustering · complete
 
 K-Means, hierarchical and DBSCAN compared on the same feature set, with the
-chosen segmentation defended on evidence rather than convenience.
+chosen segmentation defended on evidence rather than convenience. k=5,
+silhouette 0.309, stability 0.992. Ward agrees at ARI 0.602; re-clustering
+only the 600 `ok`-flagged LGAs reproduces their assignment at ARI 0.807.
+DBSCAN returns one cluster and 57 noise points, so these are divisions of a
+continuum rather than natural kinds.
 
-Deliverable: `notebooks/02_clustering.ipynb`.
+Deliverable: `pipeline/cluster.py`, `pipeline/visualise.py`,
+`sql/09_segment_names.sql`, and five figures in `reports/` — `k_selection.png`
+from the k search, and the four from `visualise.py`.
 
-## Stage 3 — Segment profiling
+**Changed from the original plan: this is not a notebook.** The stage was
+planned as `notebooks/02_clustering.ipynb` and built as scripts instead. A
+notebook that must be re-run top to bottom to be trusted is a worse artefact
+than a script that fails loudly, and standing rule 3 — restart and run all
+before every commit — is enforced by construction once the work is a script.
+
+## Stage 2b — Sub-clustering · complete
+
+PROJECT_BRIEF.md promised that if the clusters only recovered geography, the
+analysis would say so and then look for structure within the obvious split.
+It partly happened: Low-Income Rural Core is a near-solid northern block. Its
+274 LGAs divide into four sub-types that a null model of independently
+shuffled feature columns does not reproduce — silhouette 0.214 against a null
+95th percentile of 0.156, stability ARI 0.902. Reported with both limits: the
+excess curve is flat, so the claim is roughly three to five types rather than
+exactly four, and k=2 comes back negative.
+
+Deliverable: `pipeline/subcluster.py`,
+`pipeline/check_subsegment_fit.py`, `sql/11_subsegment_names.sql`.
+
+## Stage 3 — Segment profiling · complete
 
 Each cluster profiled on its defining indicators, then named and given a
 one-paragraph persona: what this type of market looks like, what it needs, and
-what an operator should do differently there.
+what an operator should do differently there. Nine profiles — five market
+types and the four sub-types inside the largest.
 
-Deliverable: `reports/segment_profiles.md`.
+Deliverable: `reports/segment_profiles.md`, with every number generated into
+`reports/segment_profile_data.md` by `pipeline/profile_segments.py` rather
+than typed. The rule the pair is built on: **restate no number you did not
+generate.**
 
 ## Stage 4 — Communication
 
