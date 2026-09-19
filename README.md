@@ -128,14 +128,13 @@ one division this data refuses.
 
 ## Status
 
-**In progress.** Stages 0 to 3 are complete, except that the business-question
-catalogue holds 8 of its planned 15–20. Stage 4 — the Power BI dashboard and
-the written client report — is next.
+**In progress.** Stages 0 to 3 are complete. Stage 4 — the Power BI dashboard
+and the written client report — is next.
 
 | Stage | Description | Status |
 |---|---|---|
 | 0 | Framing, data acquisition, provenance | Complete |
-| 1 | SQL: spine, joins, analysis base, question catalogue | Complete except the catalogue (8 of 15–20) |
+| 1 | SQL: spine, joins, analysis base, question catalogue | Complete |
 | 2 | Clustering: K-Means, hierarchical, DBSCAN compared | Complete |
 | 2b | Sub-clustering the largest segment against a null model | Complete |
 | 3 | Segment profiling and operating recommendations | Complete |

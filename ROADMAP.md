@@ -32,19 +32,27 @@ Sources identified, downloaded unmodified into `data/raw/`, and documented in
 Unit of analysis confirmed as the LGA at 99.87% population coverage, so the
 fallback to 109 senatorial districts was not needed.
 
-## Stage 1 — SQL analysis base · complete except the question catalogue
+## Stage 1 — SQL analysis base · complete
 
 All cleaning, joining and aggregation happens in `sql/`. The loader copies files
 into SQLite and does nothing else, so every transformation is readable.
 
 Deliverables: the 774-LGA spine keyed on P-code, indicator tables joined onto it,
-an assertion suite run after every rebuild, and a catalogue of 15–20 business
+an assertion suite run after every rebuild, and a catalogue of business
 questions with their queries and answers in `sql/10_business_questions.sql`.
 
-**Outstanding: the catalogue holds 8 questions, not 15–20.** The file
-`10_business_questions.sql` ends with "Q9 onwards: to come". Either the
-remaining questions get written or the target is revised down — but the stage
-is not finished while the file says so itself.
+**Target revised 19 Sep 2026: the catalogue is 8 questions, not 15–20.** Two
+of the eight stopped being questions and became findings — Q7 took a methods
+review of its own and changed what every other number here may claim, Q8
+produced the cost-versus-revenue inversion and the North East decision. They
+consumed the effort a dozen shallower questions would have.
+
+A pre-registered target exists so it cannot be quietly moved once the results
+are in, so the test for a legitimate revision is whether the reason has
+anything to do with the result being favourable. This one does not. The four
+questions that were pencilled in are resolved individually at the foot of
+`10_business_questions.sql` — one superseded by the segmentation, one deferred
+to the dashboard, one answered there in place, one never needed.
 
 ## Stage 2 — Clustering · complete
 

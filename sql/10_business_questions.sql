@@ -687,10 +687,58 @@ LIMIT 20;
 --     without the qualification.
 
 
--- ------------------------------------------------------------
--- Q9 onwards: to come.
---   - Which LGAs have the highest share of population without electricity?
---   - How much of each state's unserved population sits in its top 5 LGAs?
---   - Where does demand justify a mini-grid rather than a solar home system?
---   - Which senatorial districts would be chosen if the unit were coarser?
--- ------------------------------------------------------------
+-- ============================================================
+-- WHY THIS CATALOGUE STOPS AT EIGHT
+--
+-- ROADMAP.md set a Stage 0 target of 15-20 questions. It holds eight, and
+-- the target is revised to eight rather than left standing and unmet.
+--
+-- The reason is a change in the shape of the work, not in how the answers
+-- came out. Two of these eight stopped being questions and became findings.
+-- Q7 took a methods review of its own in docs/gep_quality_review.md and
+-- changed what every other number in the project is allowed to claim. Q8
+-- produced the cost-versus-revenue inversion and the North East decision.
+-- Between them they consumed the effort a dozen shallower questions would
+-- have, and they are worth more.
+--
+-- A pre-registered target exists so it cannot be quietly moved once the
+-- results are in. The test for a legitimate revision is whether the reason
+-- has anything to do with the result being favourable. This one does not,
+-- and it is recorded here so a reader can disagree with it.
+--
+--
+-- THE FOUR QUESTIONS THAT WERE PENCILLED IN, AND WHAT BECAME OF THEM
+--
+-- 1. Which LGAs have the highest share of population without electricity?
+--    SUPERSEDED. The segmentation answers this better than a ranking would.
+--    A list of the worst-served LGAs treats them as better and worse
+--    versions of each other. Segments 1 and 2 say which are worst served
+--    AND what to do about it, which is what the question was for.
+--
+-- 2. How much of each state's unserved population sits in its top 5 LGAs?
+--    STILL OPEN, and useful. It is a concentration measure and it belongs
+--    to the dashboard rather than here, because the answer is 37 numbers
+--    that a reader will want to sort and filter. Deferred to Stage 4.
+--
+-- 3. Where does demand justify a mini-grid rather than a solar home system?
+--    ANSWERED, and the answer is short enough to record here rather than
+--    write a query for. In the GEP least-cost model under scenario
+--    ng-2-0_0_0_0_0_0, mini-grid is the least-cost technology for a
+--    negligible share of population everywhere in Nigeria. By segment:
+--        Deep Off-Grid Frontier   5.0 percent   the highest anywhere
+--        Low-Income Rural Core    1.6
+--        Grid-Arrival Markets     1.6
+--        Grid-Served Hinterland   0.2
+--        Served Metros            0.0
+--        national mean            1.1
+--    So the honest answer is: almost nowhere, in this scenario. Mini-grid
+--    is a material option only in the Deep Off-Grid Frontier, and even
+--    there it is one person in twenty. Any recommendation built on
+--    mini-grids would be arguing against the model this project relies on,
+--    and would have to say so. Source: reports/segment_profile_data.md.
+--
+-- 4. Which senatorial districts would be chosen if the unit were coarser?
+--    NOT NEEDED. Stage 0 confirmed the LGA at 99.87 percent population
+--    coverage, so the fallback to 109 senatorial districts was never
+--    triggered. Running it now would answer a question nobody has.
+-- ============================================================
