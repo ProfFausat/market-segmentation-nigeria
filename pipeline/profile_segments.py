@@ -85,10 +85,12 @@ def load(con):
                n.display_order, n.segment_name, n.is_offgrid_market,
                s.seg_ward, s.seg_dbscan, s.seg_kmeans_ok_only,
                {', '.join('f.' + c for c in FEATURES + list(EXTRA))},
-               f.unserved_pop_2020, f.gep_pop_2020
+               f.unserved_pop_2020, f.gep_pop_2020,
+               g.pct_grid_existing_2030
         FROM lga_segments_named n
         JOIN lga_segments   s ON s.lga_pcode = n.lga_pcode
         JOIN cluster_features f ON f.lga_pcode = n.lga_pcode
+        JOIN lga_gep_indicators g ON g.lga_pcode = n.lga_pcode
     """)
     names = q(con, "SELECT * FROM segment_names ORDER BY display_order")
     try:
@@ -96,9 +98,10 @@ def load(con):
             SELECT n.lga_pcode, n.state_name, n.gep_flag, n.sub, n.sub_order,
                    n.subsegment_name, n.full_label, n.is_offgrid_market,
                    {', '.join('f.' + c for c in FEATURES + list(EXTRA))},
-                   f.unserved_pop_2020
+                   f.unserved_pop_2020, g.pct_grid_existing_2030
             FROM lga_subsegments_named n
             JOIN cluster_features f ON f.lga_pcode = n.lga_pcode
+            JOIN lga_gep_indicators g ON g.lga_pcode = n.lga_pcode
         """)
         subnames = q(con, "SELECT * FROM subsegment_names ORDER BY display_order")
     except Exception:
@@ -112,6 +115,23 @@ def load(con):
     # Counted, not typed. An earlier draft wrote "of 774" as a literal, which
     # broke this file's own rule: restate no number you did not generate.
     n_lgas = int(q(con, "SELECT COUNT(*) AS n FROM lga_base").n.iloc[0])
+
+    # ROW-COUNT ASSERTION AFTER EVERY JOIN (ROADMAP standing rule 2).
+    # The queries above are INNER joins onto lga_gep_indicators. Today that
+    # table has a row for all 774 LGAs, so nothing can be dropped -- but that
+    # is a property of the current data, not of the query. If it ever stops
+    # holding, an inner join removes LGAs silently and every share in this
+    # file shifts with no error raised. Refuse instead.
+    n_view = int(q(con, "SELECT COUNT(*) AS n FROM lga_segments_named").n.iloc[0])
+    if len(seg) != n_view:
+        sys.exit(f"JOIN LOST ROWS: lga_segments_named has {n_view} rows, the "
+                 f"joined query returned {len(seg)}. Most likely "
+                 f"lga_gep_indicators is missing LGAs. Nothing written.")
+    if len(sub):
+        n_sub = int(q(con, "SELECT COUNT(*) AS n FROM lga_subsegments_named").n.iloc[0])
+        if len(sub) != n_sub:
+            sys.exit(f"JOIN LOST ROWS: lga_subsegments_named has {n_sub} rows, "
+                     f"the joined query returned {len(sub)}. Nothing written.")
     return seg, names, sub, subnames, missing, n_lgas
 
 
@@ -188,6 +208,26 @@ def fmt(v, dp=3):
     return f"{v:,.0f}" if abs(v) >= 1000 else f"{v:.{dp}f}"
 
 
+def grid_conditional(df) -> float:
+    """
+    New grid connections by 2030 as a share of the people NOT ALREADY on the
+    grid, rather than as a share of everybody.
+
+    `pct_grid_new_2030` is a share of total population, which silently mixes
+    places that are 96 percent connected with places that are 3 percent
+    connected. Compared straight across segments it understates grid arrival
+    wherever existing coverage is already high. The conditional figure answers
+    the question a reader actually has: of the people here still waiting, how
+    many does the model give a wire to?
+
+    This was added after a draft claimed the grid "is not coming" to a segment
+    whose conditional rate is 20.8 percent -- above the national one.
+    """
+    ex = df["pct_grid_existing_2030"].mean()
+    new = df["pct_grid_new_2030"].mean()
+    return float("nan") if ex >= 1 else 100.0 * new / (1.0 - ex)
+
+
 def profile_table(sub_df, all_df, cols, compare="national"):
     """
     Group mean beside a comparison mean, so no reader has to infer scale.
@@ -204,6 +244,13 @@ def profile_table(sub_df, all_df, cols, compare="national"):
     for c in cols:
         lines.append(f"| {NICE.get(c, EXTRA.get(c, c))} | "
                      f"{fmt(sub_df[c].mean())} | {fmt(all_df[c].mean())} |")
+    if "pct_grid_existing_2030" in sub_df.columns:
+        lines.append("| already on grid, 2030 | "
+                     f"{fmt(sub_df['pct_grid_existing_2030'].mean())} | "
+                     f"{fmt(all_df['pct_grid_existing_2030'].mean())} |")
+        lines.append("| **new grid, of those not already on it** | "
+                     f"**{grid_conditional(sub_df):.1f}%** | "
+                     f"{grid_conditional(all_df):.1f}% |")
     return "\n".join(lines)
 
 
@@ -263,6 +310,7 @@ def main():
                                    / total_unserved, 1),
             "electrified": round(d.elec_rate_2020.mean(), 3),
             "stand-alone PV": round(d.pct_standalone_pv_2030.mean(), 3),
+            "new grid, of unconnected %": round(grid_conditional(d), 1),
             "suspect": int((d.gep_flag == "suspect").sum()),
             "off-grid market": "yes" if n.is_offgrid_market else "no",
         })
@@ -388,6 +436,7 @@ def main():
                                       / sub_tot, 1),
                 "stand-alone PV": round(d.pct_standalone_pv_2030.mean(), 3),
                 "grid by 2030": round(d.pct_grid_new_2030.mean(), 3),
+                "new grid, of unconnected %": round(grid_conditional(d), 1),
                 "suspect": int((d.gep_flag == "suspect").sum()),
                 "off-grid market": "yes" if n.is_offgrid_market else "no",
             })

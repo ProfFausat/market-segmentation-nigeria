@@ -25,7 +25,7 @@
 --
 -- Descending off-grid commercial priority: what an expansion director is
 -- reading for. NOT unserved population (that would put the grid-arrival
--- segment second, ahead of a market where the grid is not coming), and
+-- segment second, ahead of a market the grid mostly does not reach), and
 -- NOT electrification rate (which is an input to the decision, not the
 -- decision).
 --
@@ -85,7 +85,7 @@ VALUES
   (1, 2, 'Deep Off-Grid Frontier',
    'Mean 37.3 km to the nearest MV line, +4.2 SD -- the most extreme value anywhere in the feature matrix. 3.7% electrified.',
    1,
-   'The highest concentration of need in the country at 203,000 unserved per LGA, and at this distance the grid is not coming. Enter only alongside a partner already operating in the state.',
+   'The highest concentration of need in the country at 203,000 unserved per LGA. DO NOT READ 37 KM AS THE GRID NEVER ARRIVING. The model assigns a new grid connection to 20.8 percent of the people here who are not already connected. That is roughly half the national rate on the same measure (40.3 percent), so the grid really is far less likely to reach this segment than anywhere else -- but far less likely is not never. Distance makes the grid expensive, not absent. Four in five will not get a connection, which is the case for entry, but asset life is a siting question here rather than a given. Enter only alongside a partner already operating in the state.',
    'SECURITY AND LOGISTICS EXPOSURE. 12 of these 26 LGAs are in Borno. Feasibility is decided here before economics is. See the North East decision in Q8.'),
 
   (2, 3, 'Grid-Arrival Markets',

@@ -2,7 +2,7 @@
 
 **GENERATED FILE — do not edit.** Regenerate with `python pipeline/profile_segments.py`.
 
-Generated 2026-09-18 from `data/processed/nigeria_lga.db`.
+Generated 2026-09-28 from `data/processed/nigeria_lga.db`.
 
 Every number in `reports/segment_profiles.md` must come from here or from a source this file names. Restate no number you did not generate.
 
@@ -10,13 +10,13 @@ Every number in `reports/segment_profiles.md` must come from here or from a sour
 
 ## 1. The five market types
 
-| # | market type            | LGAs | unserved (M) | % of segmented unserved | electrified | stand-alone PV | suspect | off-grid market |
-|---|------------------------|------|--------------|-------------------------|-------------|----------------|---------|-----------------|
-| 1 | Low-Income Rural Core  | 274  | 47.6         | 56.9                    | 0.29        | 0.59           | 36      | yes             |
-| 2 | Deep Off-Grid Frontier | 26   | 5.3          | 6.3                     | 0.037       | 0.72           | 5       | yes             |
-| 3 | Grid-Arrival Markets   | 135  | 18.8         | 22.5                    | 0.365       | 0.099          | 29      | no              |
-| 4 | Grid-Served Hinterland | 292  | 11.3         | 13.5                    | 0.827       | 0.051          | 76      | no              |
-| 5 | Served Metros          | 42   | 0.7          | 0.8                     | 0.967       | 0.001          | 23      | no              |
+| # | market type            | LGAs | unserved (M) | % of segmented unserved | electrified | stand-alone PV | new grid, of unconnected % | suspect | off-grid market |
+|---|------------------------|------|--------------|-------------------------|-------------|----------------|----------------------------|---------|-----------------|
+| 1 | Low-Income Rural Core  | 274  | 47.6         | 56.9                    | 0.29        | 0.59           | 15.6                       | 36      | yes             |
+| 2 | Deep Off-Grid Frontier | 26   | 5.3          | 6.3                     | 0.037       | 0.72           | 20.8                       | 5       | yes             |
+| 3 | Grid-Arrival Markets   | 135  | 18.8         | 22.5                    | 0.365       | 0.099          | 82.5                       | 29      | no              |
+| 4 | Grid-Served Hinterland | 292  | 11.3         | 13.5                    | 0.827       | 0.051          | 69.6                       | 76      | no              |
+| 5 | Served Metros          | 42   | 0.7          | 0.8                     | 0.967       | 0.001          | 96.3                       | 23      | no              |
 
 Off-grid markets: **2 of 5**, holding **52.9M** of 83.7M unserved (**63.2%**).
 
@@ -85,6 +85,8 @@ Off-grid markets: **2 of 5**, holding **52.9M** of 83.7M unserved (**63.2%**).
 | settlement density | 4,315 | 7,023 |
 | stand-alone solar share, 2030 | 0.590 | 0.271 |
 | mini-grid share, 2030 | 0.016 | 0.011 |
+| already on grid, 2030 | 0.281 | 0.527 |
+| **new grid, of those not already on it** | **15.6%** | 40.3% |
 
 **Where.** Kano (29 LGAs, 5.5M), Bauchi (19 LGAs, 4.9M), Katsina (30 LGAs, 4.9M), Jigawa (25 LGAs, 4.1M), Benue (15 LGAs, 3.2M)
 
@@ -98,7 +100,7 @@ Off-grid markets: **2 of 5**, holding **52.9M** of 83.7M unserved (**63.2%**).
 
 **Defining fact.** Mean 37.3 km to the nearest MV line, +4.2 SD -- the most extreme value anywhere in the feature matrix. 3.7% electrified.
 
-**Operating step.** The highest concentration of need in the country at 203,000 unserved per LGA, and at this distance the grid is not coming. Enter only alongside a partner already operating in the state.
+**Operating step.** The highest concentration of need in the country at 203,000 unserved per LGA. DO NOT READ 37 KM AS THE GRID NEVER ARRIVING. The model assigns a new grid connection to 20.8 percent of the people here who are not already connected. That is roughly half the national rate on the same measure (40.3 percent), so the grid really is far less likely to reach this segment than anywhere else -- but far less likely is not never. Distance makes the grid expensive, not absent. Four in five will not get a connection, which is the case for entry, but asset life is a siting question here rather than a given. Enter only alongside a partner already operating in the state.
 
 **Caveat.** SECURITY AND LOGISTICS EXPOSURE. 12 of these 26 LGAs are in Borno. Feasibility is decided here before economics is. See the North East decision in Q8.
 
@@ -113,6 +115,8 @@ Off-grid markets: **2 of 5**, holding **52.9M** of 83.7M unserved (**63.2%**).
 | settlement density | 5,977 | 7,023 |
 | stand-alone solar share, 2030 | 0.720 | 0.271 |
 | mini-grid share, 2030 | 0.050 | 0.011 |
+| already on grid, 2030 | 0.028 | 0.527 |
+| **new grid, of those not already on it** | **20.8%** | 40.3% |
 
 **Where.** Borno (12 LGAs, 2.5M), Niger (2 LGAs, 0.5M), Kogi (3 LGAs, 0.5M), Adamawa (2 LGAs, 0.5M), Taraba (2 LGAs, 0.4M)
 
@@ -141,6 +145,8 @@ Off-grid markets: **2 of 5**, holding **52.9M** of 83.7M unserved (**63.2%**).
 | settlement density | 9,090 | 7,023 |
 | stand-alone solar share, 2030 | 0.099 | 0.271 |
 | mini-grid share, 2030 | 0.016 | 0.011 |
+| already on grid, 2030 | 0.341 | 0.527 |
+| **new grid, of those not already on it** | **82.5%** | 40.3% |
 
 **Where.** Cross River (13 LGAs, 2.0M), Akwa Ibom (11 LGAs, 1.3M), Kogi (8 LGAs, 1.3M), Kaduna (6 LGAs, 1.2M), Oyo (9 LGAs, 1.1M)
 
@@ -169,6 +175,8 @@ Off-grid markets: **2 of 5**, holding **52.9M** of 83.7M unserved (**63.2%**).
 | settlement density | 6,439 | 7,023 |
 | stand-alone solar share, 2030 | 0.051 | 0.271 |
 | mini-grid share, 2030 | 0.002 | 0.011 |
+| already on grid, 2030 | 0.825 | 0.527 |
+| **new grid, of those not already on it** | **69.6%** | 40.3% |
 
 **Where.** Kano (9 LGAs, 0.8M), Akwa Ibom (20 LGAs, 0.8M), Imo (22 LGAs, 0.8M), Oyo (15 LGAs, 0.7M), Kaduna (8 LGAs, 0.6M)
 
@@ -197,6 +205,8 @@ Off-grid markets: **2 of 5**, holding **52.9M** of 83.7M unserved (**63.2%**).
 | settlement density | 22,750 | 7,023 |
 | stand-alone solar share, 2030 | 0.001 | 0.271 |
 | mini-grid share, 2030 | 0.000 | 0.011 |
+| already on grid, 2030 | 0.959 | 0.527 |
+| **new grid, of those not already on it** | **96.3%** | 40.3% |
 
 **Where.** Rivers (7 LGAs, 0.2M), Anambra (3 LGAs, 0.1M), Oyo (8 LGAs, 0.1M), Kogi (1 LGAs, 0.1M), Lagos (11 LGAs, 0.1M)
 
@@ -210,12 +220,12 @@ Off-grid markets: **2 of 5**, holding **52.9M** of 83.7M unserved (**63.2%**).
 
 Parent: **Low-Income Rural Core** — 274 LGAs, 47.6M unserved.
 
-| # | sub-type             | LGAs | unserved (M) | % of segment | stand-alone PV | grid by 2030 | suspect | off-grid market |
-|---|----------------------|------|--------------|--------------|----------------|--------------|---------|-----------------|
-| 1 | Off-Plan Grid Edge   | 115  | 17.3         | 36.2         | 0.54           | 0.07         | 9       | yes             |
-| 2 | Solar-Default Remote | 63   | 13.3         | 28           | 0.751          | 0.052        | 10      | yes             |
-| 3 | Lower-Poverty Rural  | 77   | 14.2         | 29.8         | 0.618          | 0.18         | 15      | yes             |
-| 4 | Grid-Bound Exception | 19   | 2.9          | 6            | 0.24           | 0.291        | 2       | no              |
+| # | sub-type             | LGAs | unserved (M) | % of segment | stand-alone PV | grid by 2030 | new grid, of unconnected % | suspect | off-grid market |
+|---|----------------------|------|--------------|--------------|----------------|--------------|----------------------------|---------|-----------------|
+| 1 | Off-Plan Grid Edge   | 115  | 17.3         | 36.2         | 0.54           | 0.07         | 11.4                       | 9       | yes             |
+| 2 | Solar-Default Remote | 63   | 13.3         | 28           | 0.751          | 0.052        | 6.4                        | 10      | yes             |
+| 3 | Lower-Poverty Rural  | 77   | 14.2         | 29.8         | 0.618          | 0.18         | 21.7                       | 15      | yes             |
+| 4 | Grid-Bound Exception | 19   | 2.9          | 6            | 0.24           | 0.291        | 53.9                       | 2       | no              |
 
 ### Low-Income Rural Core -> Off-Plan Grid Edge
 
@@ -223,7 +233,7 @@ Parent: **Low-Income Rural Core** — 274 LGAs, 47.6M unserved.
 
 **Defining fact.** 3.5 km from a medium-voltage line yet only 7 percent scheduled for a grid connection by 2030. Neither number is extreme alone -- sub 1 is closer at 3.2 km, sub 3 is lower at 5 percent -- the conjunction is what no other sub-type has. Largest block: 115 LGAs, 17.3M unserved, 36.2 percent of the segment.
 
-**Operating step.** Enter here first. Logistics are cheap at 3.5 km from existing infrastructure with the shortest travel times in the segment, and the grid is not scheduled to close the gap. Stand-alone solar is least-cost for 54 percent of its people and mini-grid for under 1 percent, so plan household systems rather than distribution.
+**Operating step.** Enter here first. Logistics are cheap: 3.5 km from existing infrastructure and 0.38 hours travel to town against a segment average of 0.57, and the grid is not scheduled to close the gap. Stand-alone solar is least-cost for 54 percent of its people and mini-grid for under 1 percent, so plan household systems rather than distribution.
 
 **Caveat.** Has no extreme on any single variable. It is the centre of the segment, not a peak, and the write-up should say so. 9 of 115 flagged suspect (8 percent), the cleanest data of the four. A corroborating but weak signal: 95 percent of its LGAs are nearest to Grid-Served Hinterland -- suggestive, not independent evidence, because a well-fitting group (mean silhouette 0.312) has a largely arbitrary second-nearest.
 
@@ -238,6 +248,8 @@ Parent: **Low-Income Rural Core** — 274 LGAs, 47.6M unserved.
 | settlement density | 4,896 | 4,315 |
 | stand-alone solar share, 2030 | 0.540 | 0.590 |
 | mini-grid share, 2030 | 0.007 | 0.016 |
+| already on grid, 2030 | 0.382 | 0.281 |
+| **new grid, of those not already on it** | **11.4%** | 15.6% |
 
 **Where.** Katsina (25 LGAs, 3.8M), Kano (18 LGAs, 3.2M), Jigawa (16 LGAs, 2.3M), Bauchi (8 LGAs, 1.4M), Zamfara (7 LGAs, 1.3M)
 
@@ -245,7 +257,7 @@ Parent: **Low-Income Rural Core** — 274 LGAs, 47.6M unserved.
 
 *63 LGAs · 13.3M unserved · an off-grid market*
 
-**Defining fact.** Stand-alone solar is least-cost for 75.1 percent of its people, the highest share anywhere in the country. 9.6 km to a medium-voltage line and 0.96 hours travel to town, both the highest in the segment.
+**Defining fact.** Stand-alone solar is least-cost for 75.1 percent of its people, the highest of any group in this analysis -- above Deep Off-Grid Frontier at 72.0 percent. 9.6 km to a medium-voltage line and 0.96 hours travel to town, both the highest in the segment.
 
 **Operating step.** The purest off-grid market in the volume segment and the best-formed of the four -- mean parent silhouette 0.424, not one LGA below zero. Only 5 percent are scheduled for grid connection, so asset life is not at risk. Price and staff for a cost to serve roughly triple sub 2 at a similar revenue per connection.
 
@@ -262,6 +274,8 @@ Parent: **Low-Income Rural Core** — 274 LGAs, 47.6M unserved.
 | settlement density | 4,407 | 4,315 |
 | stand-alone solar share, 2030 | 0.751 | 0.590 |
 | mini-grid share, 2030 | 0.018 | 0.016 |
+| already on grid, 2030 | 0.178 | 0.281 |
+| **new grid, of those not already on it** | **6.4%** | 15.6% |
 
 **Where.** Bauchi (7 LGAs, 2.6M), Yobe (11 LGAs, 1.9M), Jigawa (9 LGAs, 1.8M), Zamfara (6 LGAs, 1.7M), Katsina (4 LGAs, 0.8M)
 
@@ -269,7 +283,7 @@ Parent: **Low-Income Rural Core** — 274 LGAs, 47.6M unserved.
 
 *77 LGAs · 14.2M unserved · an off-grid market*
 
-**Defining fact.** Poverty rate 0.322 against 0.491, 0.513 and 0.608 for the other three -- the only clean single-variable separation in this sub-clustering. Lowest settlement density of the four at 3,734.
+**Defining fact.** Poverty rate 0.322 against 0.491, 0.513 and 0.608 for the other three -- the only clean single-variable separation in this sub-clustering. Settlement density 3,734, below the segment average of 4,315.
 
 **Operating step.** READ THE HORIZON FIRST: 18 percent are scheduled for grid connection by 2030, triple sub 2 at 7 percent and sub 3 at 5 percent. Size asset life accordingly. The offsetting fact is the reason for the name -- this is the best ability to pay in the volume market -- but the horizon leads, because only a name travels into a summary and this name carries the upside.
 
@@ -286,6 +300,8 @@ Parent: **Low-Income Rural Core** — 274 LGAs, 47.6M unserved.
 | settlement density | 3,734 | 4,315 |
 | stand-alone solar share, 2030 | 0.618 | 0.590 |
 | mini-grid share, 2030 | 0.031 | 0.016 |
+| already on grid, 2030 | 0.171 | 0.281 |
+| **new grid, of those not already on it** | **21.7%** | 15.6% |
 
 **Where.** Niger (12 LGAs, 1.9M), Kano (9 LGAs, 1.8M), Benue (8 LGAs, 1.8M), Sokoto (7 LGAs, 1.3M), Kaduna (4 LGAs, 1.1M)
 
@@ -310,5 +326,7 @@ Parent: **Low-Income Rural Core** — 274 LGAs, 47.6M unserved.
 | settlement density | 2,847 | 4,315 |
 | stand-alone solar share, 2030 | 0.240 | 0.590 |
 | mini-grid share, 2030 | 0.009 | 0.016 |
+| already on grid, 2030 | 0.461 | 0.281 |
+| **new grid, of those not already on it** | **53.9%** | 15.6% |
 
 **Where.** Ebonyi (7 LGAs, 0.8M), Plateau (3 LGAs, 0.6M), Benue (2 LGAs, 0.6M), Enugu (4 LGAs, 0.4M), Oyo (1 LGAs, 0.2M)

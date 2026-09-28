@@ -147,10 +147,15 @@ need anywhere in Nigeria.
 Adamawa (2, 0.5M), Taraba (2, 0.4M).
 
 **What an operator does differently here.** Enters only alongside a partner
-already operating in the state. At 37 km from the nearest line the grid is not
-coming whatever the plan says, so asset life is secure — but travel time is
-0.95 hours against a national 0.4 and cost to serve is correspondingly high.
-This is not a segment in which to learn a new operating model.
+already operating in the state, and sites assets deliberately rather than
+assuming distance protects them. Distance makes the grid expensive here, not
+absent. The model gives a new grid connection to 20.8% of the people here who
+are not already connected — roughly half the national rate on the same
+measure, 40.3%. So the grid is far less likely to arrive here than anywhere
+else, which is the case for entry. But one in five of the unconnected is
+modelled to get a wire, so asset life is a siting question rather than a
+given. Travel time is 0.95 hours against a national 0.4, so cost to serve is
+high. This is not a segment in which to learn a new operating model.
 
 **The caveat that decides it.** **Twelve of these 26 LGAs are in Borno.**
 Security and logistics are not a risk to be priced here; they are the first
@@ -339,7 +344,8 @@ has. In fact this group has no extreme on any single variable: it is the
 the country. Katsina (25 LGAs), Kano (18), Jigawa (16).
 
 **What an operator does differently.** Enters here first. Logistics are cheap
-and nobody else is coming. Stand-alone solar is least-cost for 54% and
+— 0.38 hours travel to town against a segment average of 0.57 — and nobody
+else is coming. Stand-alone solar is least-cost for 54% and
 mini-grid for under 1%, so plan household systems rather than distribution.
 
 **How far it can be trusted.** Cleanest of the four: 9 of 115 flagged
@@ -350,7 +356,8 @@ mini-grid for under 1%, so plan household systems rather than distribution.
 **63 LGAs · 13.3M unserved · 28.0% of the segment · an off-grid market**
 
 > **Defining indicator — stand-alone solar is least-cost for 75.1% of its
-> people, the highest share anywhere in the country.**
+> people, the highest of any group in this analysis**, above Deep Off-Grid
+> Frontier at 72.0%.
 
 The purest off-grid market in the volume segment, and the best-formed of the
 four. Only 5% are scheduled for a grid connection, so asset life is not at
@@ -372,7 +379,8 @@ Frontier's 37.3 km** and the two should not be read as the same proposition.
 > **Defining indicator — poverty rate 0.322**, against 0.491, 0.513 and 0.608
 > for the other three. The best ability to pay in the volume market.
 
-Also the lowest settlement density of the four at 3,734. Niger (12 LGAs),
+Settlement density is 3,734, below the segment average of 4,315. Niger
+(12 LGAs),
 Kano (9), Benue (8).
 
 **What an operator does differently — and read the horizon first.** **18% of
